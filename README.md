@@ -1,6 +1,6 @@
 [![official project](http://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-# [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) mobile application
+# [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) mobile application with wizard setup
 
 > **Note**
 > Compose Multiplatform for iOS is in Alpha. It may change incompatibly and require manual migration in the future.
@@ -61,6 +61,20 @@ Before you start, use the [KDoctor](https://github.com/Kotlin/kdoctor) tool to e
    ```
 
 Otherwise, KDoctor will highlight which parts of your setup still need to be configured and will suggest a way to fix them.
+
+## Refactor with own App Name and Package Name or Bundle ID
+
+Give executable permission for `setup.sh` via terminal Android Studio
+```shell
+chmod +x setup.sh
+```
+
+Run `setup.sh` in terminal Android Studio
+```shell
+./setup.sh
+```
+
+This script will be renamed app name, package name or bundle id and namespace. After all complete, the script will be restarting android studio and run the clean up script from terminal.
 
 ## Examine the project structure
 
