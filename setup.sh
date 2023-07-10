@@ -3,13 +3,15 @@ set -e
 
 spinner_pid=
 
-TEMPLATE_APP_NAME="My Application"
+TEMPLATE_APP_NAME="My application"
 TEMPLATE_NAMESPACE="com.myapplication"
 
 app_name=""
 namespace=""
 
+namespace_files=()
 package_name_files=()
+app_name_files=()
 
 function start_spinner() {
   spinchars=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
@@ -27,13 +29,16 @@ function stop_spinner() {
 }
 
 function main() {
+  chmod +x cleanup-open.sh
+  chmod +x close.sh
+
   ask_namespace
   ask_app_name
   rename_namespace
-  #  rename_app_name
-  #  find_and_move_namespace
-
-  echo "> Success!"
+  rename_package_name
+  rename_app_name
+  find_and_move_namespace
+  ending
 }
 
 function ask_namespace() {
@@ -56,49 +61,70 @@ function ask_app_name() {
   fi
 }
 
-function rename_namespace() {
-  start_spinner "> Find and replace namespace"
-  sleep 3
-  stop_spinner
-
-  ./cleanup.sh
-
-  package_name="$TEMPLATE_NAMESPACE.$TEMPLATE_APP_NAME"
+function rename_app_name() {
+  start_spinner "> Find and replace app name"
+  sleep 2
 
   while IFS= read -r line; do
-    package_name_files+=("$line")
-  done < <(grep -r com.myapplication.MyApplication . | cut -d ":" -f1)
+    app_name_files+=("$line")
+  done < <(grep -r "$TEMPLATE_APP_NAME" . | cut -d ":" -f1)
 
-  for i in "${package_name_files[@]}"; do
+  for i in "${app_name_files[@]}"; do
     if [ "$i" != "./setup.sh" ]; then
-      echo "replace in: $i"
-      sed -i "s/$package_name/$namespace/g" "$i"
+      fixPath=$(echo "$i" | sed 's/^.\///')
+      sed -i -E "s/$TEMPLATE_APP_NAME/$app_name/g" "$fixPath"
+      rm "$fixPath-E"
     fi
   done
 
-  #  find . -type f -exec grep -Iq . {} \; -exec awk -v var_a="$package_name" -v var_b="$namespace" '{gsub(var_a, var_b)}1' {} +
-
-  #  find . -type f -exec awk -v var_a="$package_name" -v var_b="$namespace" '{gsub(var_a, var_b)}1' {} +
-
-  #    find . -type f -exec sh -c 'sed -i "s|${package_name}|${namespace}|g" "$0"' {} \;
-  #  find . -type f -exec sh -c 'sed -i "s|${TEMPLATE_NAMESPACE}|${namespace}|g" "$0"' {} \;
-
-  #  find . -type f -exec sed -i "s/$package_name/$namespace/g" {} +
-  #  find . -type f -exec sed -i "s/$TEMPLATE_NAMESPACE/$namespace/g" {} +
-
+  stop_spinner
 }
 
-function rename_app_name() {
-  start_spinner "> Find and replace app name"
-  sleep 3
-  find . -type f -exec sed -i "s/$TEMPLATE_APP_NAME/$app_name/g" {} +
+function rename_namespace() {
+  start_spinner "> Find and replace namespace"
+  sleep 2
+
+  while IFS= read -r line; do
+    namespace_files+=("$line")
+  done < <(grep -r com.myapplication.MyApplication . | cut -d ":" -f1)
+
+  for i in "${namespace_files[@]}"; do
+    if [ "$i" != "./setup.sh" ]; then
+      fixPath=$(echo "$i" | sed 's/^.\///')
+      sed -i -E "s/com\.myapplication\.MyApplication/$namespace/g" "$fixPath"
+      rm "$fixPath-E"
+    fi
+  done
+
+  stop_spinner
+}
+
+function rename_package_name() {
+  start_spinner "> Find and replace package name"
+  sleep 2
+
+  while IFS= read -r line; do
+    package_name_files+=("$line")
+  done < <(grep -r com.myapplication . | cut -d ":" -f1)
+
+  for i in "${package_name_files[@]}"; do
+    if [ "$i" != "./setup.sh" ]; then
+      fixPath=$(echo "$i" | sed 's/^.\///')
+      if [[ "$i" != *".git"* ]]; then
+        sed -i -E "s/com\.myapplication/$namespace/g" "$fixPath"
+        rm "$fixPath-E"
+      fi
+    fi
+  done
+
   stop_spinner
 }
 
 # shellcheck disable=SC2001
 function find_and_move_namespace() {
   start_spinner "> Find and replace directory"
-  sleep 3
+  sleep 2
+  stop_spinner
 
   last_template_namespace=$(echo "$TEMPLATE_NAMESPACE" | cut -d'.' -f2)
   find_template_dir_namespace=$(find . -type d -name "com" -exec test -d "{}/$last_template_namespace" \; -print)
@@ -107,9 +133,18 @@ function find_and_move_namespace() {
   replacement_namespace=$(echo "$namespace" | sed 's#\.#/#g')
   replacement_directory=$(echo "$template_dir_namespace" | sed "s#com/$last_template_namespace#$replacement_namespace#")
 
-  mv "$template_dir_namespace" "$replacement_directory"
-  #  echo "$replacement_directory"
-  stop_spinner
+  fixPath1=$(echo "$template_dir_namespace" | sed 's/^.\///')
+  fixPath2=$(echo "$replacement_directory" | sed 's/^.\///')
+
+  mkdir -p "$fixPath2"
+  cp -R "$fixPath1/." "$fixPath2"
+  rm -rf "$fixPath1"
+}
+
+# shellcheck disable=SC2162
+function ending() {
+  read -p "> The template success to rename, Android Studio will be restart and cleanup, please ENTER to continue... "
+  ./close.sh
 }
 
 main "$@"
