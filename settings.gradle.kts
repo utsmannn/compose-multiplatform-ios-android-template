@@ -9,8 +9,9 @@ include(":shared")
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        mavenCentral()
         google()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 
     plugins {
@@ -32,8 +33,8 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
         mavenCentral()
+        google()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
