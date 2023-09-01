@@ -1,5 +1,8 @@
 rootProject.name = "MyApplication"
 
+//enableFeaturePreview("VERSION_CATALOGS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 include(":androidApp")
 include(":shared")
 
@@ -28,6 +31,7 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         mavenCentral()
         google()
