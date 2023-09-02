@@ -1,6 +1,4 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    kotlin("native.cocoapods")
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrain.compose)
@@ -50,7 +48,7 @@ kotlin {
 }
 
 android {
-    compileSdk = (findProperty("android.compileSdk") as String).toInt()
+    compileSdk = (libs.versions.android.compileSdk.get()).toInt()
     namespace = "com.myapplication.common"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -58,7 +56,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        minSdk = (findProperty("android.minSdk") as String).toInt()
+        minSdk = (libs.versions.android.minSdk.get()).toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

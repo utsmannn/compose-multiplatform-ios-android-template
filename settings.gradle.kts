@@ -1,6 +1,5 @@
 rootProject.name = "MyApplication"
 
-//enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":androidApp")
