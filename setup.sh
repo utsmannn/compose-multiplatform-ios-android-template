@@ -88,7 +88,8 @@ function rename_app_name() {
     fi
   done
 
-  sed -i -E "s/MyApplication/$app_name/g" "settings.gradle.kts"
+  projectName=$(echo "$app_name" | sed 's/ //g')
+  sed -i -E "s/MyApplication/$projectName/g" "settings.gradle.kts"
   rm "settings.gradle.kts-E"
 
   stop_spinner
