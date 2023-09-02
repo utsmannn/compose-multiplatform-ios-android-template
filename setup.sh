@@ -32,6 +32,7 @@ function main() {
   chmod +x cleanup-open.sh
   chmod +x close.sh
 
+  pre_clean
   ask_namespace
   ask_app_name
   rename_namespace
@@ -39,6 +40,16 @@ function main() {
   rename_app_name
   find_and_move_namespace
   ending
+}
+
+function pre_clean() {
+  rm -rf .gradle
+  rm -rf build
+  rm -rf */build
+  rm -rf iosApp/iosApp.xcworkspace
+  rm -rf iosApp/Pods
+  rm -rf iosApp/iosApp.xcodeproj/project.xcworkspace
+  rm -rf iosApp/iosApp.xcodeproj/xcuserdata
 }
 
 function ask_namespace() {
